@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英単語テスト対策ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F7F0; --paper-2:#EFF3EA; --grid:#DCE6DA; --rule:#C7D3C3;
+    --ink:#1F3A5F; --ink-soft:#4C5E56; --red:#D6432E; --red-dark:#A82F1E; --red-soft:#F3D9D2;
+    --card:#FFFEFA; --gold:#B8862E;
+    --shadow: 0 10px 30px rgba(31,58,95,0.10), 0 2px 6px rgba(31,58,95,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 33px, var(--grid) 33px, var(--grid) 34px),
+      repeating-linear-gradient(90deg, transparent, transparent 33px, var(--grid) 33px, var(--grid) 34px),
+      var(--paper);
+    font-family:'Zen Maru Gothic', sans-serif; color:var(--ink);
+    display:flex; justify-content:center; padding:28px 14px 60px;
+  }
+  .binder{ position:fixed; left:0; top:0; bottom:0; width:46px; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; pointer-events:none; opacity:0.55; }
+  .binder span{ width:14px; height:14px; border-radius:50%; background:var(--paper); box-shadow: inset 0 0 0 2px var(--rule), 0 1px 2px rgba(0,0,0,0.08); }
+  .margin-line{ position:fixed; left:64px; top:0; bottom:0; width:2px; background:var(--red); opacity:0.35; pointer-events:none; }
+  .app{ width:100%; max-width:640px; margin-left:20px; }
+  @media (max-width:640px){ .binder{display:none;} .margin-line{display:none;} .app{margin-left:0;} }
+
+  header.top{ text-align:center; margin-bottom:22px; }
+  header.top .eyebrow{ font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:.14em; color:var(--ink-soft); text-transform:uppercase; }
+  header.top h1{ font-family:'Yomogi', cursive; font-size:32px; font-weight:400; margin:4px 0 2px; color:var(--ink); }
+  header.top .sub{ font-size:13px; color:var(--ink-soft); }
+
+  .card{ background:var(--card); border-radius:14px; box-shadow:var(--shadow); padding:26px 24px; position:relative; border:1px solid #E6E2D4; }
+  .card + .card{ margin-top:16px; }
+
+  label.field-label{ display:block; font-size:13px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; font-family:'JetBrains Mono', monospace; letter-spacing:.03em; }
+  textarea, input[type=text], input[type=password]{
+    width:100%; font-family:'JetBrains Mono', monospace; font-size:13.5px; line-height:1.7;
+    padding:12px 14px; border-radius:10px; border:1.5px solid var(--rule); background:#FCFDFA; color:var(--ink); outline:none;
+  }
+  textarea{ min-height:170px; resize:vertical; }
+  textarea:focus, input:focus{ border-color:var(--ink); }
+  .hint{ font-size:12px; color:var(--ink-soft); margin-top:6px; line-height:1.6; }
+  .error-text{ font-size:12.5px; color:var(--red-dark); margin-top:8px; font-weight:700; }
+
+  .row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:center; }
+  .btn{ font-family:'Zen Maru Gothic', sans-serif; font-weight:700; font-size:14px; border:none; border-radius:999px; padding:11px 20px; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+  .btn:active{ transform:scale(0.97); }
+  .btn-primary{ background:var(--ink); color:#fff; box-shadow:0 4px 0 #10233b; }
+  .btn-primary:hover{ box-shadow:0 5px 0 #10233b; transform:translateY(-1px); }
+  .btn-ghost{ background:transparent; color:var(--ink); border:1.5px solid var(--rule); }
+  .btn-ghost:hover{ border-color:var(--ink); }
+  .btn-red{ background:var(--red); color:#fff; box-shadow:0 4px 0 var(--red-dark); }
+  .btn-red:hover{ box-shadow:0 5px 0 var(--red-dark); transform:translateY(-1px); }
+  .btn-gold{ background:var(--gold); color:#fff; box-shadow:0 4px 0 #8a641f; }
+  .btn-sm{ padding:8px 14px; font-size:12.5px; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
+  .link-btn{ background:none; border:none; color:var(--ink-soft); text-decoration:underline; font-size:12.5px; cursor:pointer; font-family:'Zen Maru Gothic', sans-serif; padding:4px 0; }
+  .save-indicator{ font-size:12px; color:var(--gold); font-family:'JetBrains Mono', monospace; }
+
+  .mode-group{ display:grid; gap:8px; margin-top:6px; }
+  .mode-opt{ display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:10px; border:1.5px solid var(--rule); cursor:pointer; background:#FCFDFA; }
+  .mode-opt.selected{ border-color:var(--ink); background:#EFF3FA; }
+  .mode-opt input{ accent-color:var(--ink); width:16px; height:16px; }
+  .mode-opt .t{ font-weight:700; font-size:14px; }
+  .mode-opt .d{ font-size:12px; color:var(--ink-soft); }
+
+  .num-row{ display:flex; align-items:center; gap:12px; margin-top:6px; }
+  .num-row input[type=number]{ width:90px; font-family:'JetBrains Mono', monospace; font-size:16px; font-weight:700; padding:8px 10px; border-radius:8px; border:1.5px solid var(--rule); text-align:center; }
+  .num-row .avail{ font-size:12px; color:var(--ink-soft); }
+
+  /* lesson tabs (student home) */
+  .tab-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-top:6px; }
+  .tab-card{
+    border-radius:12px; padding:16px 14px 14px; cursor:pointer; border:1.5px solid transparent;
+    position:relative; overflow:hidden; text-align:left;
+  }
+  .tab-card::before{ content:""; position:absolute; top:0; left:0; right:0; height:6px; background:var(--tab-accent,#999); }
+  .tab-card .tname{ font-family:'Yomogi', cursive; font-size:19px; margin-top:6px; }
+  .tab-card .tcount{ font-size:11.5px; color:var(--ink-soft); font-family:'JetBrains Mono', monospace; margin-top:4px; }
+  .tab-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
+
+  /* quiz */
+  .progress-wrap{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .progress-txt{ font-family:'JetBrains Mono', monospace; font-size:12.5px; color:var(--ink-soft); }
+  .squares{ display:flex; gap:3px; flex-wrap:wrap; max-width:100%; margin:8px 0 18px; }
+  .sq{ width:9px; height:9px; border-radius:2px; background:var(--paper-2); border:1px solid var(--rule); }
+  .sq.correct{ background:var(--ink); border-color:var(--ink); }
+  .sq.wrong{ background:var(--red); border-color:var(--red-dark); }
+  .sq.cur{ box-shadow:0 0 0 2px var(--ink); }
+  .direction-tag{ display:inline-block; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--ink-soft); border:1px solid var(--rule); border-radius:999px; padding:3px 10px; margin-bottom:12px; }
+  .prompt{ font-family:'Yomogi', cursive; font-size:30px; text-align:center; padding:20px 10px 26px; word-break:break-word; }
+  .prompt.eng{ font-family:'JetBrains Mono', monospace; font-weight:700; letter-spacing:.02em; }
+  .answer-wrap{ position:relative; }
+  input.answer{ width:100%; font-family:'JetBrains Mono', monospace; font-size:19px; padding:14px 16px; border-radius:10px; border:2px solid var(--rule); outline:none; background:#FCFDFA; color:var(--ink); }
+  input.answer:focus{ border-color:var(--ink); }
+  input.answer.correct{ border-color:var(--ink); background:#EEF3FF; }
+  input.answer.wrong{ border-color:var(--red); background:#FDF1EF; }
+  .feedback{ display:flex; align-items:center; gap:14px; margin-top:14px; min-height:44px; }
+  .feedback .correct-answer{ font-size:13px; color:var(--ink-soft); }
+  .feedback .correct-answer b{ color:var(--red-dark); font-family:'JetBrains Mono', monospace; }
+  .stamp{ width:52px; height:52px; flex:0 0 auto; }
+  .stamp svg{ width:100%; height:100%; overflow:visible; }
+  .stamp path, .stamp line{ fill:none; stroke:var(--red); stroke-width:6; stroke-linecap:round; stroke-dasharray:220; stroke-dashoffset:220; animation:draw .45s ease forwards; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .quiz-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+
+  /* result */
+  .score-slip{ text-align:center; padding:10px 0 6px; }
+  .score-slip .label{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--ink-soft); letter-spacing:.12em; }
+  .score-circle{ width:132px; height:132px; margin:14px auto; border-radius:50%; border:5px solid var(--red); display:flex; align-items:center; justify-content:center; transform:rotate(-4deg); }
+  .score-circle .num{ font-family:'Yomogi', cursive; font-size:40px; color:var(--red); }
+  .score-sub{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+  .miss-list{ margin-top:18px; }
+  .miss-item{ display:flex; justify-content:space-between; gap:10px; padding:10px 4px; border-bottom:1px dashed var(--rule); font-size:14px; }
+  .miss-item:last-child{ border-bottom:none; }
+  .miss-item .w{ font-family:'JetBrains Mono', monospace; font-weight:700; }
+  .miss-item .m{ color:var(--ink-soft); text-align:right; }
+  .no-miss{ text-align:center; padding:20px 0; font-family:'Yomogi', cursive; font-size:20px; color:var(--ink-soft); }
+
+  /* history / weak words */
+  .history-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 4px; border-bottom:1px dashed var(--rule); font-size:13px; }
+  .history-item:last-child{ border-bottom:none; }
+  .history-item .hdate{ color:var(--ink-soft); font-family:'JetBrains Mono', monospace; font-size:11.5px; }
+  .history-item .hscore{ font-weight:700; }
+  .weak-chip-list{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .weak-chip{ font-family:'JetBrains Mono', monospace; font-size:12px; background:var(--red-soft); color:var(--red-dark); border-radius:999px; padding:4px 10px; font-weight:700; }
+  .weak-chip .cnt{ opacity:.75; margin-left:3px; }
+  .empty-note{ font-size:12.5px; color:var(--ink-soft); text-align:center; padding:14px 0; }
+  .loading-screen{ text-align:center; padding:80px 0; font-family:'Yomogi', cursive; font-size:20px; color:var(--ink-soft); }
+  .footer-note{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:18px; }
+  .tiny-admin-link{ text-align:center; margin-top:26px; }
+  .tiny-admin-link button{ background:none; border:none; color:#B7C0B6; font-size:11px; cursor:pointer; text-decoration:underline; }
+
+  /* teacher */
+  .teacher-badge{ display:inline-block; background:var(--ink); color:#fff; font-family:'JetBrains Mono', monospace; font-size:11px; padding:3px 10px; border-radius:999px; margin-bottom:8px; }
+  .lesson-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:12px 4px; border-bottom:1px dashed var(--rule); }
+  .lesson-row:last-child{ border-bottom:none; }
+  .lesson-row .lname{ font-weight:700; font-size:14.5px; }
+  .lesson-row .lcount{ font-size:11.5px; color:var(--ink-soft); font-family:'JetBrains Mono', monospace; }
+  .lesson-actions{ display:flex; gap:6px; }
+
+  /* lesson menu: study-mode choice cards */
+  .choice-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px; }
+  @media (max-width:520px){ .choice-grid{ grid-template-columns:1fr; } }
+  .choice-card{
+    border-radius:14px; padding:22px 18px; cursor:pointer; text-align:left; border:1.5px solid var(--rule);
+    background:#FCFDFA; transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .choice-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--ink); }
+  .choice-card .cicon{ font-size:28px; line-height:1; margin-bottom:8px; }
+  .choice-card .ctitle{ font-family:'Yomogi', cursive; font-size:20px; margin-bottom:4px; }
+  .choice-card .cdesc{ font-size:12.5px; color:var(--ink-soft); line-height:1.6; }
+
+  /* flashcard */
+  .flash-progress{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .flash-stage{ perspective:1200px; margin:10px 0 22px; }
+  .flash-card{
+    min-height:220px; border-radius:16px; border:1.5px solid var(--rule); background:#FCFDFA;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    padding:28px 20px; cursor:pointer; gap:10px;
+  }
+  .flash-card .flabel{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--ink-soft); letter-spacing:.1em; }
+  .flash-card .fmain{ font-family:'Yomogi', cursive; font-size:32px; word-break:break-word; }
+  .flash-card .fmain.eng{ font-family:'JetBrains Mono', monospace; font-weight:700; }
+  .flash-card .fsub{ font-size:15px; color:var(--ink-soft); margin-top:2px; }
+  .flash-card .fhint{ font-size:12px; color:var(--ink-soft); margin-top:10px; }
+  .flash-card.flipped{ background:#EFF3FA; border-color:var(--ink); }
+  .flash-actions{ display:flex; gap:10px; justify-content:center; }
+  .flash-nav{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+  .flash-summary-num{ font-family:'Yomogi', cursive; font-size:44px; text-align:center; }
+  .flash-summary-row{ display:flex; justify-content:space-around; text-align:center; margin:18px 0; }
+  .flash-summary-row .lbl{ font-size:12px; color:var(--ink-soft); font-family:'JetBrains Mono', monospace; margin-top:4px; }
+
+  /* custom confirm overlay (window.confirm is unreliable inside sandboxed artifact iframes) */
+  .confirm-overlay{ position:fixed; inset:0; background:rgba(31,58,95,0.38); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; }
+  .confirm-box{ background:var(--card); border-radius:14px; box-shadow:var(--shadow); padding:24px; max-width:320px; text-align:center; }
+  .confirm-box p{ font-size:14px; line-height:1.7; margin:0 0 16px; }
+
+  /* word table editor */
+  .word-table{ margin-top:10px; }
+  .word-table .table-head{ display:flex; gap:8px; padding:0 4px 6px; }
+  .word-table .table-head span{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--ink-soft); letter-spacing:.04em; }
+  .word-table .col-num{ width:22px; flex:0 0 auto; }
+  .word-table .col-word{ width:36%; }
+  .word-table .col-meaning{ flex:1; }
+  .word-row{ display:flex; gap:8px; align-items:center; margin-bottom:7px; }
+  .word-row .row-num{ width:22px; flex:0 0 auto; font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--ink-soft); text-align:center; }
+  .word-row input.w-word{ width:36%; font-size:13.5px; padding:9px 10px; }
+  .word-row input.w-meaning{ flex:1; font-size:13.5px; padding:9px 10px; }
+  .word-row .del-row{ background:none; border:none; color:var(--red); font-size:18px; cursor:pointer; width:26px; flex:0 0 auto; line-height:1; }
+  .word-row .del-row:hover{ color:var(--red-dark); }
+  .bulk-paste{ margin-top:18px; border-top:1px dashed var(--rule); padding-top:16px; }
+</style>
+</head>
+<body>
+<div class="binder"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+<div class="margin-line"></div>
+<div class="app" id="app"><div class="loading-screen">読み込み中…</div></div>
+
+<div id="confirmOverlay" class="confirm-overlay">
+  <div class="confirm-box">
+    <p id="confirmMsg"></p>
+    <div class="row" style="justify-content:center; margin-top:0;">
+      <button id="confirmYes" class="btn btn-red btn-sm">はい</button>
+      <button id="confirmNo" class="btn btn-ghost btn-sm">いいえ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SAMPLE = [
+  ["achieve","達成する"],["benefit","利益/恩恵"],["consider","考慮する/よく考える"],
+  ["determine","決定する/突き止める"],["evidence","証拠"],["frequent","頻繁な"],
+  ["genuine","本物の/誠実な"],["hesitate","ためらう"],["identify","特定する/識別する"],
+  ["justify","正当化する"],["knowledge","知識"],["likely","ありそうな/おそらく"],
+  ["maintain","維持する"],["negotiate","交渉する"],["obtain","獲得する/手に入れる"],
+  ["particular","特定の/特有の"],["quality","質/特質"],["reluctant","気が進まない"],
+  ["significant","重要な/かなりの"],["thorough","徹底的な"]
+];
+const TAB_COLORS = [
+  {bg:"#EAF1EE", accent:"#5C8A76"}, {bg:"#EDEFF7", accent:"#5B6FA6"},
+  {bg:"#FBEDE7", accent:"#C97452"}, {bg:"#F7EFE1", accent:"#B8862E"},
+  {bg:"#F1EAF4", accent:"#8C6BA8"}, {bg:"#EAF3F5", accent:"#4C8CA0"}
+];
+
+const WORDLISTS_KEY = "wordlists";
+const HISTORY_KEY = "history";
+const PIN_KEY = "teacherPin";
+const OLD_WORDLIST_KEY = "wordlist";
+const ROSTER_KEY = "roster";
+const ATTEMPTS_KEY = "attemptStats";
+const MY_ID_KEY = "myStudentId";
+const HISTORY_MAX_PER_LIST = 40;
+
+let state = {
+  screen:"loading",
+  lists:[],
+  history:[],
+  pin:null,
+  pinInputError:"",
+  selectedListId:null,
+  mode:"meaning2word",
+  requestedCount:100,
+  entries:[], queue:[], idx:0, answered:false, lastCorrect:null, lastUserAnswer:"", lastSkipped:false,
+  results:[], reviewMode:false, reviewLabel:"",
+  saveIndicator:false,
+  editingListId:null,
+  formName:"", formRows:[], formError:"", bulkPasteText:"", pasteReplace:false,
+  roster:[], attemptStats:{}, myStudentId:null, idInputError:"",
+  rosterRows:[], rosterBulkPasteText:"", rosterPasteReplace:false, rosterFormError:"",
+  flashQueue:[], flashIdx:0, flashFlipped:false, flashKnown:0, flashUnsure:[], flashDone:false, flashShuffle:true
+};
+
+function applyPasteToRows(){
+  const lines = state.bulkPasteText.split("\n").map(l=>l.replace(/\r$/,"")).filter(l=>l.trim().length>0);
+  const added = [];
+  for(const line of lines){
+    let parts, meaning;
+    if(line.includes("\t")){
+      parts = line.split("\t");
+      meaning = parts.slice(1).join(" ").trim();
+    } else {
+      parts = line.split(",");
+      meaning = parts.slice(1).join(",").trim();
+    }
+    const word = (parts[0]||"").trim();
+    if(word && meaning) added.push({word, meaning});
+  }
+  if(added.length === 0){
+    state.formError = "貼り付けた内容から単語を読み取れませんでした。1行に「英単語　意味」がタブまたはカンマ区切りで並ぶ形式で貼り付けてください。";
+    render();
+    return;
+  }
+  if(state.pasteReplace){
+    state.formRows = added;
+  } else {
+    const existing = state.formRows.filter(r=>r.word.trim() || r.meaning.trim());
+    state.formRows = [...existing, ...added];
+  }
+  state.formError = "";
+  render();
+}
+
+function entriesToRows(rawText){
+  return parseEntries(rawText).map(e => ({ word: e.word, meaning: e.meaningStr }));
+}
+function rowsToRawText(rows){
+  return rows
+    .map(r => ({ word: (r.word||"").trim(), meaning: (r.meaning||"").trim() }))
+    .filter(r => r.word && r.meaning)
+    .map(r => `${r.word},${r.meaning}`)
+    .join("\n");
+}
+
+// ---------- storage helpers ----------
+async function storGet(key, fallback, shared=false){
+  try{ const r = await window.storage.get(key, shared); return r ? r.value : fallback; }
+  catch(e){ return fallback; }
+}
+async function storSet(key, value, shared=false){
+  try{ await window.storage.set(key, value, shared); return true; }
+  catch(e){ console.error("storage set failed", key, e); return false; }
+}
+async function storDelete(key, shared=false){
+  try{ await window.storage.delete(key, shared); }catch(e){}
+}
+async function loadLists(){
+  const raw = await storGet(WORDLISTS_KEY, null);
+  if(!raw) return [];
+  try{ const p = JSON.parse(raw); return Array.isArray(p) ? p : []; }catch(e){ return []; }
+}
+async function saveLists(lists){ return storSet(WORDLISTS_KEY, JSON.stringify(lists)); }
+async function loadHistory(){
+  const raw = await storGet(HISTORY_KEY, null);
+  if(!raw) return [];
+  try{ const p = JSON.parse(raw); return Array.isArray(p) ? p : []; }catch(e){ return []; }
+}
+async function saveHistory(history){ return storSet(HISTORY_KEY, JSON.stringify(history)); }
+async function loadPin(){ return storGet(PIN_KEY, null); }
+async function savePin(pin){ return storSet(PIN_KEY, pin); }
+
+async function loadRoster(){
+  const raw = await storGet(ROSTER_KEY, null, true);
+  if(!raw) return [];
+  try{ const p = JSON.parse(raw); return Array.isArray(p) ? p : []; }catch(e){ return []; }
+}
+async function saveRoster(roster){ return storSet(ROSTER_KEY, JSON.stringify(roster), true); }
+
+async function loadAttemptStats(){
+  const raw = await storGet(ATTEMPTS_KEY, null, true);
+  if(!raw) return {};
+  try{ const p = JSON.parse(raw); return (p && typeof p === "object") ? p : {}; }catch(e){ return {}; }
+}
+async function saveAttemptStats(stats){ return storSet(ATTEMPTS_KEY, JSON.stringify(stats), true); }
+
+async function loadMyStudentId(){ return storGet(MY_ID_KEY, null, false); }
+async function saveMyStudentId(id){ return storSet(MY_ID_KEY, id, false); }
+
+async function bumpAttemptStats(listId, studentId){
+  if(!studentId || !listId) return;
+  try{
+    const stats = await loadAttemptStats();
+    if(!stats[listId]) stats[listId] = {};
+    const cur = stats[listId][studentId] || {count:0, last:null};
+    cur.count += 1;
+    cur.last = new Date().toISOString();
+    stats[listId][studentId] = cur;
+    await saveAttemptStats(stats);
+    state.attemptStats = stats;
+  }catch(e){ console.error("attempt stats update failed", e); }
+}
+
+function applyRosterPaste(){
+  const lines = state.rosterBulkPasteText.split("\n").map(l=>l.replace(/\r$/,"")).filter(l=>l.trim().length>0);
+  const added = [];
+  for(const line of lines){
+    let parts, name;
+    if(line.includes("\t")){ parts = line.split("\t"); name = parts.slice(1).join(" ").trim(); }
+    else { parts = line.split(","); name = parts.slice(1).join(",").trim(); }
+    const id = (parts[0]||"").trim();
+    if(id && name) added.push({id, name});
+  }
+  if(added.length === 0){
+    state.rosterFormError = "貼り付けた内容から名簿を読み取れませんでした。1行に「番号　氏名」がタブまたはカンマ区切りで並ぶ形式で貼り付けてください。";
+    render();
+    return;
+  }
+  if(state.rosterPasteReplace){
+    state.rosterRows = added;
+  } else {
+    const existing = state.rosterRows.filter(r=>r.id.trim() || r.name.trim());
+    state.rosterRows = [...existing, ...added];
+  }
+  state.rosterFormError = "";
+  render();
+}
+
+async function migrateOldDataIfNeeded(){
+  const existingLists = await loadLists();
+  if(existingLists.length > 0) return { lists: existingLists, history: await loadHistory() };
+  const oldText = await storGet(OLD_WORDLIST_KEY, null);
+  let lists = [];
+  let history = await loadHistory();
+  if(oldText && oldText.trim()){
+    const migratedId = "migrated-1";
+    lists = [{ id: migratedId, name: "レッスン1", rawText: oldText, createdAt: new Date().toISOString() }];
+    history = history.map(s => ({ ...s, listId: s.listId || migratedId, listName: s.listName || "レッスン1" }));
+    await saveLists(lists);
+    await saveHistory(history);
+    await storDelete(OLD_WORDLIST_KEY);
+  }
+  return { lists, history };
+}
+
+// ---------- parsing / normalization ----------
+function looksJapanese(s){
+  return /[\u3040-\u30FF\u3400-\u9FFF]/.test(s);
+}
+function parseEntries(text){
+  const lines = (text||"").split("\n").map(l=>l.trim()).filter(Boolean);
+  const out = [];
+  for(const line of lines){
+    const parts = line.split(",");
+    if(parts.length < 2) continue;
+    let word = parts[0].trim();
+    let meaningRaw = parts.slice(1).join(",").trim();
+    if(!word || !meaningRaw) continue;
+    // 「英単語」欄に日本語が、「意味」欄に日本語が入っていない場合は列が逆になっているとみなして自動的に入れ替える
+    if(looksJapanese(word) && !looksJapanese(meaningRaw)){
+      const tmp = word; word = meaningRaw; meaningRaw = tmp;
+    }
+    const meanings = meaningRaw.split(/[\/、,，;；・]/).map(s=>s.trim()).filter(Boolean);
+    out.push({word, meaningStr: meaningRaw, meanings});
+  }
+  return out;
+}
+function normalizeEng(s){
+  return s.trim().toLowerCase()
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/[.,!?;:'"]/g,"");
+}
+function normalizeJa(s){
+  return s.trim()
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/[\u3000\s]/g,"")
+    .replace(/[。、.,！？!?]/g,"");
+}
+function buildQueue(entries, mode, count){
+  const q = []; let pool = [...entries]; shuffle(pool); let i = 0;
+  while(q.length < count){
+    if(i >= pool.length){ pool = [...entries]; shuffle(pool); i = 0; }
+    const e = pool[i]; i++;
+    let direction = mode;
+    if(mode === "mix") direction = Math.random() < 0.5 ? "meaning2word" : "word2meaning";
+    q.push({...e, direction});
+  }
+  return q;
+}
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]] = [arr[j],arr[i]]; } }
+function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function fmtDate(iso){ const d = new Date(iso); const p = n => String(n).padStart(2,"0"); return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function modeLabel(mode){ if(mode==="meaning2word") return "日→英"; if(mode==="word2meaning") return "英→日"; return "ミックス"; }
+function getList(id){ return state.lists.find(l=>l.id===id); }
+function computeWeakWords(history, listId){
+  const map = new Map();
+  for(const session of history){
+    if(session.listId !== listId) continue;
+    for(const m of (session.missed||[])){
+      const key = m.word.toLowerCase();
+      if(!map.has(key)) map.set(key, {word:m.word, meaningStr:m.meaningStr, meanings:m.meanings, count:0});
+      map.get(key).count += 1;
+    }
+  }
+  return [...map.values()].sort((a,b)=>b.count-a.count);
+}
+
+// ---------- render dispatch ----------
+function render(){
+  const app = document.getElementById("app");
+  const map = {
+    "loading": () => `<div class="loading-screen">読み込み中…</div>`,
+    "student-home": renderStudentHome,
+    "student-lesson-menu": renderStudentLessonMenu,
+    "student-setup": renderStudentSetup,
+    "flashcard": renderFlashcard,
+    "quiz": renderQuiz,
+    "result": renderResult,
+    "teacher-gate": renderTeacherGate,
+    "teacher-home": renderTeacherHome,
+    "teacher-form": renderTeacherForm,
+    "teacher-roster": renderTeacherRoster
+  };
+  app.innerHTML = (map[state.screen] || map["loading"])();
+  attachHandlers();
+}
+
+// ---------- student ID bar (shown on student-home / student-setup) ----------
+function renderIdBar(){
+  if(!state.myStudentId){
+    return `
+    <div class="card" style="padding:16px 20px;">
+      <label class="field-label">はじめに自分の番号を入力してください</label>
+      <div class="row" style="margin-top:0;">
+        <input type="text" id="myIdInput" placeholder="例：3610" style="max-width:180px;">
+        <button class="btn btn-primary btn-sm" id="saveMyIdBtn">決定</button>
+      </div>
+      ${state.idInputError ? `<div class="error-text">${escapeHtml(state.idInputError)}</div>` : ""}
+      <div class="hint">先生に確認した番号を入力してください。パソコン室などこの端末を他の人と共用している場合は、練習を始める前に必ず自分の番号になっているか確認してください。</div>
+    </div>`;
+  }
+  const match = state.roster.find(r=>r.id === state.myStudentId);
+  return `
+  <div class="card" style="padding:12px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+    <div style="font-size:13px;">あなたの番号：<b>${escapeHtml(state.myStudentId)}</b>${match ? `（${escapeHtml(match.name)}）` : ` <span class="hdate">※名簿未登録</span>`}</div>
+    <button class="link-btn" id="changeMyIdBtn">自分の番号ではない／変更する</button>
+  </div>`;
+}
+function attachIdBarHandlers(){
+  const saveBtn = document.getElementById("saveMyIdBtn");
+  if(saveBtn) saveBtn.addEventListener("click", async ()=>{
+    const v = document.getElementById("myIdInput").value.trim();
+    if(!v){ state.idInputError = "番号を入力してください。"; render(); return; }
+    await saveMyStudentId(v);
+    state.myStudentId = v; state.idInputError = "";
+    render();
+  });
+  const changeBtn = document.getElementById("changeMyIdBtn");
+  if(changeBtn) changeBtn.addEventListener("click", async ()=>{
+    await storDelete(MY_ID_KEY, false);
+    state.myStudentId = null;
+    render();
+  });
+}
+
+// ---------- class progress (per lesson, visible to students) ----------
+function renderClassProgress(listId){
+  if(state.roster.length === 0){
+    return `<div class="empty-note">名簿が登録されていません。先生に確認してください。</div>`;
+  }
+  const lessonStats = state.attemptStats[listId] || {};
+  const rows = [...state.roster]
+    .sort((a,b)=> a.id.localeCompare(b.id, "ja", {numeric:true}))
+    .map(r=>{
+      const st = lessonStats[r.id];
+      const count = st ? st.count : 0;
+      const mine = r.id === state.myStudentId;
+      return `<div class="history-item"${mine ? ' style="background:#EFF3FA; border-radius:8px; padding-left:8px; padding-right:8px;"' : ''}>
+        <div><div class="hscore">${escapeHtml(r.name)}${mine ? '（あなた）' : ''}</div><div class="hdate">番号 ${escapeHtml(r.id)}</div></div>
+        <div class="hscore">${count} 回</div>
+      </div>`;
+    }).join("");
+  return `<div class="miss-list">${rows}</div>`;
+}
+
+// ---------- student home (lesson picker) ----------
+function renderStudentHome(){
+  const tabsHtml = state.lists.length ? `
+    <div class="tab-grid">
+      ${state.lists.map((l,i)=>{
+        const c = TAB_COLORS[i % TAB_COLORS.length];
+        const n = parseEntries(l.rawText).length;
+        return `<div class="tab-card" style="background:${c.bg}; --tab-accent:${c.accent};" data-list="${l.id}">
+          <div class="tname">${escapeHtml(l.name)}</div>
+          <div class="tcount">${n}語</div>
+        </div>`;
+      }).join("")}
+    </div>
+  ` : `<div class="empty-note">まだレッスンが登録されていません。先生に確認してください。</div>`;
+
+  return `
+  <header class="top">
+    <div class="eyebrow">VOCAB TYPING DRILL</div>
+    <h1>英単語テスト対策ノート</h1>
+    <div class="sub">練習したいレッスンを選んでね</div>
+  </header>
+  ${renderIdBar()}
+  <div class="card">
+    <label class="field-label">レッスンを選ぶ</label>
+    ${tabsHtml}
+  </div>
+  <div class="tiny-admin-link"><button id="toTeacher">先生用</button></div>
+  `;
+}
+
+// ---------- lesson menu: choose flashcards or test ----------
+function renderStudentLessonMenu(){
+  const list = getList(state.selectedListId);
+  if(!list){ state.screen = "student-home"; return renderStudentHome(); }
+  const entries = parseEntries(list.rawText);
+
+  const weak = computeWeakWords(state.history, list.id);
+  const weakHtml = weak.length ? `
+    <div class="weak-chip-list">${weak.slice(0,16).map(w=>`<span class="weak-chip">${escapeHtml(w.word)}<span class="cnt">×${w.count}</span></span>`).join("")}</div>
+    <div class="row"><button class="btn btn-gold btn-sm" id="drillWeak">苦手な単語だけテストする（${weak.length}語）</button></div>
+  ` : `<div class="empty-note">まだ間違えた記録がありません。</div>`;
+
+  const recent = [...state.history].filter(s=>s.listId===list.id).reverse().slice(0,6);
+  const historyHtml = recent.length ? recent.map(s=>`
+    <div class="history-item">
+      <div><div class="hscore">${s.correct} / ${s.total} 正解（${Math.round(s.correct/s.total*100)}%）</div>
+      <div class="hdate">${fmtDate(s.date)}</div></div>
+      ${s.missed && s.missed.length ? `<button class="btn btn-ghost btn-sm" data-session="${s.id}">この回の間違いを復習</button>` : `<span class="hdate">全問正解</span>`}
+    </div>`).join("") : `<div class="empty-note">練習履歴はまだありません。</div>`;
+
+  return `
+  <header class="top">
+    <div class="eyebrow">${escapeHtml(list.name)}</div>
+    <h1 style="font-size:26px;">どちらで練習する？</h1>
+    <div class="sub">登録 ${entries.length} 語</div>
+  </header>
+  ${renderIdBar()}
+  <div class="card">
+    <div class="choice-grid">
+      <div class="choice-card" id="goFlashcard">
+        <div class="cicon">📇</div>
+        <div class="ctitle">フラッシュカードで覚える</div>
+        <div class="cdesc">意味を見てから単語をめくって確認。まずはここで単語を頭に入れよう。</div>
+      </div>
+      <div class="choice-card" id="goTest">
+        <div class="cicon">✍️</div>
+        <div class="ctitle">テストで確認する</div>
+        <div class="cdesc">日本語の意味を見て英単語のスペルをタイピング。覚えたか実際にテストしよう。</div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><label class="field-label">苦手な単語</label>${weakHtml}</div>
+  <div class="card"><label class="field-label">このレッスンの練習記録</label>${historyHtml}</div>
+  <div class="card"><label class="field-label">クラスの取り組み状況（このレッスン）</label>${renderClassProgress(list.id)}</div>
+  <div class="tiny-admin-link"><button id="backHomeFromMenu">他のレッスンを選ぶ</button></div>
+  `;
+}
+
+// ---------- student setup (question count for the test) ----------
+function renderStudentSetup(){
+  const list = getList(state.selectedListId);
+  if(!list){ state.screen = "student-home"; return renderStudentHome(); }
+  const entries = parseEntries(list.rawText);
+
+  return `
+  <header class="top">
+    <div class="eyebrow">${escapeHtml(list.name)}</div>
+    <h1 style="font-size:26px;">テストの準備</h1>
+    <div class="sub">日本語の意味を見て、英単語のスペルをタイピングで答えます</div>
+  </header>
+  ${renderIdBar()}
+  <div class="card">
+    <label class="field-label">出題数（登録 ${entries.length} 語）</label>
+    <div class="num-row">
+      <input type="number" id="reqCount" min="1" max="300" value="${state.requestedCount}">
+      <span class="avail">問（登録語数より多い場合はシャッフルして繰り返し出題）</span>
+    </div>
+    <div class="row">
+      <button class="btn btn-primary" id="startBtn">テストをはじめる</button>
+      <button class="btn btn-ghost" id="backMenu">レッスンメニューに戻る</button>
+    </div>
+  </div>
+  `;
+}
+
+// ---------- flashcards ----------
+function renderFlashcard(){
+  const list = getList(state.selectedListId);
+  if(!list){ state.screen = "student-home"; return renderStudentHome(); }
+
+  if(state.flashDone || state.flashQueue.length === 0){
+    const total = state.flashKnown + state.flashUnsure.length;
+    return `
+    <header class="top">
+      <div class="eyebrow">${escapeHtml(list.name)}</div>
+      <h1 style="font-size:26px;">フラッシュカード完了</h1>
+    </header>
+    <div class="card">
+      <div class="flash-summary-num">${total}枚</div>
+      <div class="flash-summary-row">
+        <div><div class="hscore">${state.flashKnown}</div><div class="lbl">覚えた</div></div>
+        <div><div class="hscore">${state.flashUnsure.length}</div><div class="lbl">もう一度</div></div>
+      </div>
+      <div class="row" style="justify-content:center;">
+        ${state.flashUnsure.length ? `<button class="btn btn-gold" id="flashRetryUnsure">「もう一度」の分だけ復習する</button>` : ""}
+        <button class="btn btn-ghost" id="flashRestart">最初からもう一周</button>
+        <button class="btn btn-primary" id="goTestFromFlash">テストに進む</button>
+        <button class="btn btn-ghost" id="backMenuFromFlash">レッスンメニューに戻る</button>
+      </div>
+    </div>
+    `;
+  }
+
+  const total = state.flashQueue.length;
+  const card = state.flashQueue[state.flashIdx];
+  const squares = state.flashQueue.map((item,i)=>{
+    let cls = "sq";
+    if(i < state.flashIdx) cls += " correct";
+    else if(i === state.flashIdx) cls += " cur";
+    return `<div class="${cls}"></div>`;
+  }).join("");
+
+  const cardInner = !state.flashFlipped ? `
+    <div class="flabel">日本語</div>
+    <div class="fmain">${escapeHtml(card.meaningStr)}</div>
+    <div class="fhint">タップして英単語を確認</div>
+  ` : `
+    <div class="flabel">英単語</div>
+    <div class="fmain eng">${escapeHtml(card.word)}</div>
+    <div class="fsub">${escapeHtml(card.meaningStr)}</div>
+  `;
+
+  return `
+  <header class="top">
+    <div class="eyebrow">FLASHCARDS</div>
+    <h1 style="font-size:26px;">${escapeHtml(list.name)}</h1>
+  </header>
+  <div class="card">
+    <div class="flash-progress">
+      <span class="progress-txt">${state.flashIdx+1} / ${total}</span>
+      <span class="progress-txt">覚えた ${state.flashKnown}｜もう一度 ${state.flashUnsure.length}</span>
+    </div>
+    <div class="squares">${squares}</div>
+    <div class="flash-stage">
+      <div class="flash-card ${state.flashFlipped ? 'flipped' : ''}" id="flashCard">${cardInner}</div>
+    </div>
+    ${state.flashFlipped ? `
+      <div class="flash-actions">
+        <button class="btn btn-ghost" id="flashUnsureBtn">もう一度</button>
+        <button class="btn btn-primary" id="flashKnownBtn">覚えた ✓</button>
+      </div>
+    ` : `<div class="flash-actions"><button class="btn btn-ghost btn-sm" id="flashSkipBtn">わからない（スキップ）</button></div>`}
+    <div class="flash-nav">
+      <button class="btn btn-ghost btn-sm" id="flashQuit">中断してレッスンメニューに戻る</button>
+    </div>
+  </div>
+  `;
+}
+
+function currentQ(){ return state.queue[state.idx]; }
+
+function renderQuiz(){
+  const total = state.queue.length;
+  const q = currentQ();
+  const progressPct = Math.round((state.idx/total)*100);
+  const squares = state.queue.map((item,i)=>{
+    let cls = "sq";
+    if(i < state.idx){ cls += state.results[i] && state.results[i].correct ? " correct" : " wrong"; }
+    else if(i === state.idx){ cls += " cur"; }
+    return `<div class="${cls}"></div>`;
+  }).join("");
+  const isM2W = q.direction === "meaning2word";
+  const promptText = isM2W ? q.meaningStr : q.word;
+  const dirLabel = isM2W ? "日本語 → 英単語" : "英単語 → 日本語";
+  let feedbackHtml = "", inputCls = "";
+  if(state.answered){
+    inputCls = state.lastCorrect ? "correct" : "wrong";
+    const stampSvg = state.lastCorrect
+      ? `<svg viewBox="0 0 52 52"><path d="M26 4 A22 22 0 1 1 25.9 4"/></svg>`
+      : `<svg viewBox="0 0 52 52"><line x1="8" y1="8" x2="44" y2="44"/><line x1="44" y1="8" x2="8" y2="44" style="animation-delay:.15s"/></svg>`;
+    feedbackHtml = `<div class="feedback"><div class="stamp">${stampSvg}</div>
+      <div class="correct-answer">${state.lastCorrect ? "正解！" : (state.lastSkipped ? `スキップ｜正解：<b>${isM2W ? q.word : q.meaningStr}</b>` : `正解：<b>${isM2W ? q.word : q.meaningStr}</b>`)}</div></div>`;
+  }
+  return `
+  <header class="top">
+    <div class="eyebrow">${state.reviewMode ? "REVIEW MODE" : "TEST DRILL"}</div>
+    <h1 style="font-size:26px;">${state.reviewLabel || "単語テスト練習"}</h1>
+  </header>
+  <div class="card">
+    <div class="progress-wrap"><span class="progress-txt">問 ${state.idx+1} / ${total}</span><span class="progress-txt">${progressPct}%</span></div>
+    <div class="squares">${squares}</div>
+    <div class="direction-tag">${dirLabel}</div>
+    <div class="prompt ${isM2W ? '' : 'eng'}">${escapeHtml(promptText)}</div>
+    <div id="answerForm">
+      <div class="answer-wrap">
+        <input type="text" id="answerInput" class="answer ${inputCls}"
+          placeholder="${isM2W ? '英単語を入力してEnter' : '意味を日本語で入力してEnter'}"
+          ${state.answered ? 'readonly' : ''} value="${state.answered ? escapeHtml(state.lastUserAnswer||"") : ""}">
+      </div>
+      ${state.answered ? "" : `<div class="row"><button type="button" class="btn btn-primary btn-sm" id="submitAnswerBtn">回答する</button><button type="button" class="btn btn-ghost btn-sm" id="skipBtn">わからない（スキップ）</button></div>`}
+    </div>
+    ${feedbackHtml}
+    <div class="quiz-actions">
+      <button class="btn btn-ghost btn-sm" id="quitBtn">中断してレッスンメニューに戻る</button>
+      <button class="btn btn-primary" id="nextBtn" ${state.answered ? '' : 'disabled'}>${state.idx+1 === total ? '結果を見る' : '次へ（Enter）'}</button>
+    </div>
+  </div>`;
+}
+
+function renderResult(){
+  const total = state.results.length;
+  const correctCount = state.results.filter(r=>r.correct).length;
+  const acc = total ? Math.round((correctCount/total)*100) : 0;
+  const misses = state.results.filter(r=>!r.correct);
+  const missHtml = misses.length ? misses.map(m=>`
+    <div class="miss-item"><div class="w">${escapeHtml(m.word)}</div><div class="m">${escapeHtml(m.meaningStr)}</div></div>`).join("")
+    : `<div class="no-miss">全問正解！お見事です</div>`;
+  return `
+  <header class="top"><div class="eyebrow">RESULT</div><h1>採点結果</h1></header>
+  <div class="card score-slip">
+    <div class="label">SCORE</div>
+    <div class="score-circle"><div class="num">${correctCount}/${total}</div></div>
+    <div class="score-sub">正答率 ${acc}%</div>
+  </div>
+  <div class="card">
+    <label class="field-label">間違えた問題（${misses.length}問）</label>
+    <div class="miss-list">${missHtml}</div>
+    <div class="row">
+      ${misses.length ? `<button class="btn btn-red" id="reviewMiss">間違えた問題だけ復習する</button>` : ""}
+      <button class="btn btn-ghost" id="retrySame">同じ設定でもう一度</button>
+      <button class="btn btn-ghost" id="backHome">レッスンメニューに戻る</button>
+    </div>
+  </div>`;
+}
+
+// ---------- teacher screens ----------
+function renderTeacherGate(){
+  const needsSetup = !state.pin;
+  return `
+  <header class="top"><div class="eyebrow">TEACHER ONLY</div><h1 style="font-size:26px;">先生用画面</h1></header>
+  <div class="card">
+    ${needsSetup ? `
+      <label class="field-label">はじめに暗証番号を設定してください（4桁以上の数字）</label>
+      <div class="row" style="margin-top:0;">
+        <input type="password" id="pinNew" placeholder="新しい暗証番号" style="max-width:180px;">
+        <input type="password" id="pinConfirm" placeholder="確認" style="max-width:180px;">
+      </div>
+      <div class="row"><button class="btn btn-primary" id="setPinBtn">設定する</button></div>
+    ` : `
+      <label class="field-label">暗証番号を入力してください</label>
+      <div class="row" style="margin-top:0;"><input type="password" id="pinInput" placeholder="暗証番号" style="max-width:180px;"></div>
+      <div class="row"><button class="btn btn-primary" id="checkPinBtn">入る</button></div>
+    `}
+    ${state.pinInputError ? `<div class="error-text">${escapeHtml(state.pinInputError)}</div>` : ""}
+    <div class="hint" style="margin-top:16px;">※ この暗証番号はブラウザ内保存による簡易的な目隠しです。生徒がブラウザの開発者ツールを使えば内容を見られる可能性があるため、本当に見せたくない内容は登録しないでください。</div>
+  </div>
+  <div class="tiny-admin-link"><button id="backStudent">生徒画面に戻る</button></div>
+  `;
+}
+
+function renderTeacherHome(){
+  const rows = state.lists.length ? state.lists.map(l=>{
+    const n = parseEntries(l.rawText).length;
+    return `<div class="lesson-row">
+      <div><div class="lname">${escapeHtml(l.name)}</div><div class="lcount">${n}語</div></div>
+      <div class="lesson-actions">
+        <button class="btn btn-ghost btn-sm" data-edit="${l.id}">編集</button>
+        <button class="btn btn-ghost btn-sm" data-delete="${l.id}">削除</button>
+      </div>
+    </div>`;
+  }).join("") : `<div class="empty-note">レッスンがまだありません。下の「＋ 新しいレッスンを追加」から作成してください。</div>`;
+
+  return `
+  <header class="top"><div class="teacher-badge">先生用管理画面</div><h1 style="font-size:26px;">レッスン管理</h1></header>
+  <div class="card">
+    <label class="field-label">登録済みレッスン</label>
+    ${rows}
+    <div class="row"><button class="btn btn-primary" id="newListBtn">＋ 新しいレッスンを追加</button></div>
+  </div>
+  <div class="card">
+    <label class="field-label">生徒名簿（${state.roster.length}人登録）</label>
+    <div class="hint">名簿を登録すると、生徒画面に「クラスの取り組み状況」（誰が何回そのレッスンを練習したか）が表示されます。番号は「3年6組10番」なら 3610 のように、学年・組・出席番号（2桁）をつなげた数字がおすすめです。</div>
+    <div class="row">
+      <button class="btn btn-primary btn-sm" id="editRosterBtn">生徒名簿を編集</button>
+      <button class="btn btn-ghost btn-sm" id="resetAttemptsBtn">取り組み状況をリセット</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row" style="margin-top:0;">
+      <button class="btn btn-ghost btn-sm" id="changePinBtn">暗証番号を変更</button>
+      <button class="btn btn-ghost btn-sm" id="toStudentFromTeacher">生徒画面を見る</button>
+    </div>
+  </div>
+  `;
+}
+
+function renderTeacherRoster(){
+  const validCount = state.rosterRows.filter(r=>r.id.trim() && r.name.trim()).length;
+  const rowsHtml = state.rosterRows.length ? state.rosterRows.map((r,i)=>`
+    <div class="word-row" data-idx="${i}">
+      <div class="row-num">${i+1}</div>
+      <input type="text" class="w-word" data-rfield="id" data-idx="${i}" value="${escapeHtml(r.id)}" placeholder="3610">
+      <input type="text" class="w-meaning" data-rfield="name" data-idx="${i}" value="${escapeHtml(r.name)}" placeholder="山田太郎">
+      <button class="del-row" data-rdelrow="${i}" title="この行を削除">✕</button>
+    </div>`).join("") : `<div class="empty-note">まだ生徒が登録されていません。上の欄に表を貼り付けてください。</div>`;
+
+  return `
+  <header class="top"><div class="teacher-badge">先生用管理画面</div><h1 style="font-size:26px;">生徒名簿</h1></header>
+  <div class="card">
+    <label class="field-label">STEP 1｜表を貼り付け</label>
+    <div class="hint">Excelなどで「番号」「氏名」の2列を選択してコピーし、下に貼り付けてください。「3年6組10番」なら 3610 のように、学年(1桁)・組(1桁)・出席番号(2桁でゼロ埋め)をつなげた番号がおすすめです（例：1番なら01）。</div>
+    <textarea id="rosterPasteArea" style="margin-top:10px;" placeholder="3601	山田太郎
+3602	鈴木花子">${escapeHtml(state.rosterBulkPasteText)}</textarea>
+    <div class="row">
+      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-soft); cursor:pointer;">
+        <input type="checkbox" id="rosterReplaceToggle" ${state.rosterPasteReplace ? 'checked' : ''} style="width:auto;">
+        既存の名簿を貼り付けた内容で置き換える（オフなら追加）
+      </label>
+    </div>
+    <div class="row"><button class="btn btn-primary btn-sm" id="rosterBulkAddBtn">名簿に反映する</button></div>
+  </div>
+  <div class="card">
+    <label class="field-label">STEP 2｜内容を確認・修正（${validCount}人）</label>
+    <div class="word-table">
+      <div class="table-head"><span class="col-num"></span><span class="col-word">番号</span><span class="col-meaning">氏名</span></div>
+      <div id="rosterRowsWrap">${rowsHtml}</div>
+    </div>
+    <div class="row"><button class="btn btn-ghost btn-sm" id="rosterAddRowBtn">＋ 行を手動で追加</button></div>
+    ${state.rosterFormError ? `<div class="error-text">${escapeHtml(state.rosterFormError)}</div>` : ""}
+    <div class="row">
+      <button class="btn btn-primary" id="saveRosterBtn">保存する</button>
+      <button class="btn btn-ghost" id="cancelRosterBtn">戻る</button>
+    </div>
+  </div>
+  <div class="hint" style="text-align:center; margin-top:14px;">※ 名簿（番号と氏名）は生徒画面からも見えるようになります。学外に公開したくない個人情報の登録は避けてください。</div>
+  `;
+}
+
+function renderTeacherForm(){
+  const isEdit = !!state.editingListId;
+  const validCount = state.formRows.filter(r=>r.word.trim() && r.meaning.trim()).length;
+  const rowsHtml = state.formRows.length ? state.formRows.map((r,i)=>`
+    <div class="word-row" data-idx="${i}">
+      <div class="row-num">${i+1}</div>
+      <input type="text" class="w-word" data-field="word" data-idx="${i}" value="${escapeHtml(r.word)}" placeholder="apple">
+      <input type="text" class="w-meaning" data-field="meaning" data-idx="${i}" value="${escapeHtml(r.meaning)}" placeholder="りんご">
+      <button class="del-row" data-delrow="${i}" title="この行を削除">✕</button>
+    </div>`).join("") : `<div class="empty-note">まだ単語がありません。上の欄に表を貼り付けてください。</div>`;
+
+  return `
+  <header class="top"><div class="teacher-badge">先生用管理画面</div><h1 style="font-size:26px;">${isEdit ? 'レッスンを編集' : '新しいレッスンを追加'}</h1></header>
+
+  <div class="card">
+    <label class="field-label">レッスン名（例：レッスン1、Unit3 動詞 など）</label>
+    <input type="text" id="formName" value="${escapeHtml(state.formName)}" placeholder="レッスン1">
+  </div>
+
+  <div class="card">
+    <label class="field-label">STEP 1｜表を貼り付け</label>
+    <div class="hint">Excelやスプレッドシートで「英単語」「意味」の2列を選択してコピーし、下の欄に貼り付けてください。貼り付けると自動で下のリストに反映されます。</div>
+    <textarea id="pasteArea" style="margin-top:10px;" placeholder="apple	りんご
+run	走る/運営する">${escapeHtml(state.bulkPasteText)}</textarea>
+    <div class="row">
+      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-soft); cursor:pointer;">
+        <input type="checkbox" id="replaceToggle" ${state.pasteReplace ? 'checked' : ''} style="width:auto;">
+        既存のリストを貼り付けた内容で置き換える（オフなら追加）
+      </label>
+    </div>
+    <div class="row">
+      <button class="btn btn-primary btn-sm" id="bulkAddBtn">リストに反映する</button>
+      <button class="btn btn-ghost btn-sm" id="loadSampleTeacher">サンプルを試す</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="field-label">STEP 2｜内容を確認・修正（${validCount}語）</label>
+    <div class="word-table">
+      <div class="table-head"><span class="col-num"></span><span class="col-word">英単語</span><span class="col-meaning">意味</span></div>
+      <div id="rowsWrap">${rowsHtml}</div>
+    </div>
+    <div class="hint">・意味が複数ある場合は同じマス内で「/」または「、」区切りで入力してください（例：走る/運営する）</div>
+    <div class="row"><button class="btn btn-ghost btn-sm" id="addRowBtn">＋ 行を手動で追加</button></div>
+    ${state.formError ? `<div class="error-text">${escapeHtml(state.formError)}</div>` : ""}
+    <div class="row">
+      <button class="btn btn-primary" id="saveListBtn">保存する</button>
+      <button class="btn btn-ghost" id="cancelFormBtn">キャンセル</button>
+    </div>
+  </div>
+  `;
+}
+
+// ---------- handlers ----------
+function attachHandlers(){
+  const s = state.screen;
+
+  if(s === "student-home"){
+    attachIdBarHandlers();
+    document.querySelectorAll(".tab-card").forEach(el=>{
+      el.addEventListener("click", ()=>{
+        state.selectedListId = el.dataset.list;
+        state.requestedCount = 100;
+        state.mode = "meaning2word";
+        state.screen = "student-lesson-menu";
+        render();
+      });
+    });
+    document.getElementById("toTeacher").addEventListener("click", ()=>{
+      state.pinInputError = "";
+      state.screen = "teacher-gate";
+      render();
+    });
+  }
+
+  else if(s === "student-lesson-menu"){
+    attachIdBarHandlers();
+    document.getElementById("goFlashcard").addEventListener("click", ()=>{
+      const list = getList(state.selectedListId);
+      const entries = parseEntries(list.rawText);
+      if(entries.length===0) return;
+      startFlashcards(entries);
+    });
+    document.getElementById("goTest").addEventListener("click", ()=>{
+      state.screen = "student-setup"; render();
+    });
+    document.getElementById("backHomeFromMenu").addEventListener("click", ()=>{ state.screen = "student-home"; render(); });
+    const drillWeakBtn = document.getElementById("drillWeak");
+    if(drillWeakBtn) drillWeakBtn.addEventListener("click", ()=>{
+      const weak = computeWeakWords(state.history, state.selectedListId);
+      state.queue = weak.map(w=>({ word:w.word, meaningStr:w.meaningStr, meanings:w.meanings, direction:"meaning2word" }));
+      state.idx = 0; state.answered = false; state.results = []; state.lastSkipped = false;
+      state.reviewMode = true; state.reviewLabel = "苦手単語ドリル";
+      state.screen = "quiz"; render();
+    });
+    document.querySelectorAll("[data-session]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const session = state.history.find(x=>x.id===btn.dataset.session);
+        if(!session) return;
+        state.queue = (session.missed||[]).map(m=>({ word:m.word, meaningStr:m.meaningStr, meanings:m.meanings, direction:"meaning2word" }));
+        state.idx = 0; state.answered = false; state.results = []; state.lastSkipped = false;
+        state.reviewMode = true; state.reviewLabel = `${fmtDate(session.date)}の復習`;
+        state.screen = "quiz"; render();
+      });
+    });
+  }
+
+  else if(s === "student-setup"){
+    attachIdBarHandlers();
+    document.getElementById("reqCount").addEventListener("input", e=>{
+      state.requestedCount = Math.max(1, parseInt(e.target.value||"1",10));
+    });
+    document.getElementById("startBtn").addEventListener("click", ()=>{
+      const list = getList(state.selectedListId);
+      const entries = parseEntries(list.rawText);
+      if(entries.length===0) return;
+      const startQuiz = ()=>{
+        state.entries = entries;
+        state.queue = buildQueue(entries, state.mode, state.requestedCount);
+        state.idx = 0; state.answered = false; state.results = []; state.lastSkipped = false;
+        state.reviewMode = false; state.reviewLabel = list.name;
+        state.screen = "quiz";
+        render();
+      };
+      if(!state.myStudentId){
+        showConfirm("番号が未入力です。このまま始めると取り組み状況が記録されません。続けますか？", startQuiz);
+      } else {
+        startQuiz();
+      }
+    });
+    document.getElementById("backMenu").addEventListener("click", ()=>{ state.screen = "student-lesson-menu"; render(); });
+  }
+
+  else if(s === "flashcard"){
+    if(!state.flashDone && state.flashQueue.length){
+      const cardEl = document.getElementById("flashCard");
+      if(cardEl) cardEl.addEventListener("click", ()=>{ state.flashFlipped = !state.flashFlipped; render(); });
+      const knownBtn = document.getElementById("flashKnownBtn");
+      if(knownBtn) knownBtn.addEventListener("click", ()=>{ flashAdvance(true); });
+      const unsureBtn = document.getElementById("flashUnsureBtn");
+      if(unsureBtn) unsureBtn.addEventListener("click", ()=>{ flashAdvance(false); });
+      const skipBtn = document.getElementById("flashSkipBtn");
+      if(skipBtn) skipBtn.addEventListener("click", ()=>{ flashAdvance(false); });
+      document.getElementById("flashQuit").addEventListener("click", ()=>{
+        showConfirm("フラッシュカードを中断してレッスンメニューに戻りますか？", ()=>{ state.screen = "student-lesson-menu"; render(); });
+      });
+    } else {
+      const retryBtn = document.getElementById("flashRetryUnsure");
+      if(retryBtn) retryBtn.addEventListener("click", ()=>{ startFlashcards(state.flashUnsure); });
+      document.getElementById("flashRestart").addEventListener("click", ()=>{
+        const list = getList(state.selectedListId);
+        startFlashcards(parseEntries(list.rawText));
+      });
+      document.getElementById("goTestFromFlash").addEventListener("click", ()=>{ state.screen = "student-setup"; render(); });
+      document.getElementById("backMenuFromFlash").addEventListener("click", ()=>{ state.screen = "student-lesson-menu"; render(); });
+    }
+  }
+
+  else if(s === "quiz"){
+    const input = document.getElementById("answerInput");
+    if(!state.answered) input.focus();
+    if(!state.answered){
+      input.addEventListener("keydown", e=>{
+        if(e.key === "Enter" && !e.isComposing){
+          e.preventDefault();
+          submitAnswer(input.value);
+        }
+      });
+      const submitBtn = document.getElementById("submitAnswerBtn");
+      if(submitBtn) submitBtn.addEventListener("click", ()=>{ submitAnswer(input.value); });
+      const skipBtn = document.getElementById("skipBtn");
+      if(skipBtn) skipBtn.addEventListener("click", skipAnswer);
+    }
+    document.getElementById("nextBtn").addEventListener("click", goNext);
+    document.getElementById("quitBtn").addEventListener("click", ()=>{
+      showConfirm("テストを中断してレッスンメニューに戻りますか？", ()=>{ state.screen = "student-lesson-menu"; render(); });
+    });
+    document.addEventListener("keydown", onQuizKeydown);
+  }
+
+  else if(s === "result"){
+    const reviewBtn = document.getElementById("reviewMiss");
+    if(reviewBtn) reviewBtn.addEventListener("click", ()=>{
+      const misses = state.results.filter(r=>!r.correct);
+      state.queue = misses.map(m=>({ word:m.word, meaningStr:m.meaningStr, meanings:m.meanings, direction:"meaning2word" }));
+      state.idx = 0; state.answered = false; state.results = []; state.lastSkipped = false;
+      state.reviewMode = true; state.reviewLabel = "間違えた問題の復習";
+      state.screen = "quiz"; render();
+    });
+    document.getElementById("retrySame").addEventListener("click", ()=>{
+      state.queue = buildQueue(state.entries, state.mode, state.requestedCount);
+      state.idx = 0; state.answered = false; state.results = []; state.lastSkipped = false;
+      state.reviewMode = false; state.reviewLabel = getList(state.selectedListId)?.name || "単語テスト練習";
+      state.screen = "quiz"; render();
+    });
+    document.getElementById("backHome").addEventListener("click", ()=>{ state.screen = "student-lesson-menu"; render(); });
+  }
+
+  else if(s === "teacher-gate"){
+    document.getElementById("backStudent").addEventListener("click", ()=>{ state.screen = "student-home"; render(); });
+    const setPinBtn = document.getElementById("setPinBtn");
+    if(setPinBtn){
+      setPinBtn.addEventListener("click", async ()=>{
+        const a = document.getElementById("pinNew").value.trim();
+        const b = document.getElementById("pinConfirm").value.trim();
+        if(a.length < 4){ state.pinInputError = "4桁以上で入力してください。"; render(); return; }
+        if(a !== b){ state.pinInputError = "確認用の番号が一致しません。"; render(); return; }
+        await savePin(a);
+        state.pin = a; state.pinInputError = "";
+        state.screen = "teacher-home"; render();
+      });
+    }
+    const checkPinBtn = document.getElementById("checkPinBtn");
+    if(checkPinBtn){
+      checkPinBtn.addEventListener("click", ()=>{
+        const v = document.getElementById("pinInput").value.trim();
+        if(v === state.pin){ state.pinInputError = ""; state.screen = "teacher-home"; render(); }
+        else { state.pinInputError = "暗証番号が違います。"; render(); }
+      });
+    }
+  }
+
+  else if(s === "teacher-home"){
+    document.getElementById("newListBtn").addEventListener("click", ()=>{
+      state.editingListId = null; state.formName = ""; state.formRows = [];
+      state.formError = ""; state.bulkPasteText = ""; state.pasteReplace = false;
+      state.screen = "teacher-form"; render();
+    });
+    document.querySelectorAll("[data-edit]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const list = getList(btn.dataset.edit);
+        state.editingListId = list.id; state.formName = list.name;
+        state.formRows = entriesToRows(list.rawText);
+        state.formError = ""; state.bulkPasteText = ""; state.pasteReplace = false;
+        state.screen = "teacher-form"; render();
+      });
+    });
+    document.querySelectorAll("[data-delete]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const list = getList(btn.dataset.delete);
+        showConfirm(`「${list.name}」を削除しますか？関連する練習記録も削除されます。`, async ()=>{
+          state.lists = state.lists.filter(l=>l.id!==list.id);
+          state.history = state.history.filter(h=>h.listId!==list.id);
+          await saveLists(state.lists);
+          await saveHistory(state.history);
+          render();
+        });
+      });
+    });
+    document.getElementById("changePinBtn").addEventListener("click", ()=>{
+      state.pin = null; state.pinInputError = "";
+      state.screen = "teacher-gate"; render();
+    });
+    document.getElementById("toStudentFromTeacher").addEventListener("click", ()=>{ state.screen = "student-home"; render(); });
+    document.getElementById("editRosterBtn").addEventListener("click", ()=>{
+      state.rosterRows = state.roster.map(r=>({id:r.id, name:r.name}));
+      state.rosterBulkPasteText = ""; state.rosterPasteReplace = false; state.rosterFormError = "";
+      state.screen = "teacher-roster"; render();
+    });
+    document.getElementById("resetAttemptsBtn").addEventListener("click", ()=>{
+      showConfirm("すべてのレッスンの「取り組み状況」の回数をリセットしますか？この操作は元に戻せません。", async ()=>{
+        state.attemptStats = {};
+        await saveAttemptStats({});
+        render();
+      });
+    });
+  }
+
+  else if(s === "teacher-roster"){
+    document.querySelectorAll('#rosterRowsWrap input[data-rfield]').forEach(inp=>{
+      inp.addEventListener("input", e=>{
+        const i = parseInt(e.target.dataset.idx, 10);
+        const field = e.target.dataset.rfield;
+        if(state.rosterRows[i]) state.rosterRows[i][field] = e.target.value;
+      });
+    });
+    document.querySelectorAll('[data-rdelrow]').forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const i = parseInt(btn.dataset.rdelrow, 10);
+        state.rosterRows.splice(i,1);
+        render();
+      });
+    });
+    document.getElementById("rosterAddRowBtn").addEventListener("click", ()=>{
+      state.rosterRows.push({id:"",name:""});
+      render();
+      const inputs = document.querySelectorAll('#rosterRowsWrap .w-word');
+      if(inputs.length) inputs[inputs.length-1].focus();
+    });
+    const rosterPasteArea = document.getElementById("rosterPasteArea");
+    rosterPasteArea.addEventListener("input", e=>{ state.rosterBulkPasteText = e.target.value; });
+    rosterPasteArea.addEventListener("paste", ()=>{
+      setTimeout(()=>{
+        state.rosterBulkPasteText = rosterPasteArea.value;
+        applyRosterPaste();
+      }, 0);
+    });
+    document.getElementById("rosterReplaceToggle").addEventListener("change", e=>{ state.rosterPasteReplace = e.target.checked; });
+    document.getElementById("rosterBulkAddBtn").addEventListener("click", applyRosterPaste);
+    document.getElementById("cancelRosterBtn").addEventListener("click", ()=>{ state.screen = "teacher-home"; render(); });
+    document.getElementById("saveRosterBtn").addEventListener("click", async ()=>{
+      const roster = state.rosterRows
+        .map(r=>({id:(r.id||"").trim(), name:(r.name||"").trim()}))
+        .filter(r=>r.id && r.name);
+      if(roster.length === 0){ state.rosterFormError = "有効な生徒が1人もいません。番号と氏名を両方入力してください。"; render(); return; }
+      const seen = new Set(); const dupes = new Set();
+      roster.forEach(r=>{ if(seen.has(r.id)) dupes.add(r.id); seen.add(r.id); });
+      if(dupes.size > 0){ state.rosterFormError = `番号が重複しています：${[...dupes].join("、")}`; render(); return; }
+      state.roster = roster;
+      await saveRoster(roster);
+      state.rosterFormError = "";
+      state.screen = "teacher-home";
+      render();
+    });
+  }
+
+  else if(s === "teacher-form"){
+    document.getElementById("formName").addEventListener("input", e=>{ state.formName = e.target.value; });
+
+    document.querySelectorAll('#rowsWrap input[data-field]').forEach(inp=>{
+      inp.addEventListener("input", e=>{
+        const i = parseInt(e.target.dataset.idx, 10);
+        const field = e.target.dataset.field;
+        if(state.formRows[i]) state.formRows[i][field] = e.target.value;
+      });
+    });
+    document.querySelectorAll('[data-delrow]').forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const i = parseInt(btn.dataset.delrow, 10);
+        state.formRows.splice(i,1);
+        render();
+      });
+    });
+    document.getElementById("addRowBtn").addEventListener("click", ()=>{
+      state.formRows.push({word:"",meaning:""});
+      render();
+      const inputs = document.querySelectorAll('#rowsWrap .w-word');
+      if(inputs.length) inputs[inputs.length-1].focus();
+    });
+    document.getElementById("loadSampleTeacher").addEventListener("click", ()=>{
+      state.formRows = SAMPLE.map(([w,m])=>({word:w, meaning:m}));
+      state.formError = "";
+      render();
+    });
+
+    const pasteArea = document.getElementById("pasteArea");
+    pasteArea.addEventListener("input", e=>{ state.bulkPasteText = e.target.value; });
+    pasteArea.addEventListener("paste", ()=>{
+      setTimeout(()=>{
+        state.bulkPasteText = pasteArea.value;
+        applyPasteToRows();
+      }, 0);
+    });
+    document.getElementById("replaceToggle").addEventListener("change", e=>{ state.pasteReplace = e.target.checked; });
+    document.getElementById("bulkAddBtn").addEventListener("click", applyPasteToRows);
+
+    document.getElementById("cancelFormBtn").addEventListener("click", ()=>{ state.screen = "teacher-home"; render(); });
+    document.getElementById("saveListBtn").addEventListener("click", async ()=>{
+      const name = state.formName.trim();
+      const rawText = rowsToRawText(state.formRows);
+      const entries = parseEntries(rawText);
+      if(!name){ state.formError = "レッスン名を入力してください。"; render(); return; }
+      if(entries.length === 0){ state.formError = "有効な単語が1つもありません。英単語と意味を両方入力してください。"; render(); return; }
+      if(state.editingListId){
+        const idx = state.lists.findIndex(l=>l.id===state.editingListId);
+        state.lists[idx] = { ...state.lists[idx], name, rawText };
+      } else {
+        state.lists.push({ id: `list-${Date.now()}`, name, rawText, createdAt: new Date().toISOString() });
+      }
+      await saveLists(state.lists);
+      state.editingListId = null; state.formError = "";
+      state.screen = "teacher-home"; render();
+    });
+  }
+}
+
+function onQuizKeydown(e){
+  if(e.key === "Enter" && state.answered){ document.removeEventListener("keydown", onQuizKeydown); goNext(); }
+}
+
+function submitAnswer(userAnswer){
+  const q = currentQ();
+  let correct = false;
+  try{
+    const isM2W = q.direction === "meaning2word";
+    if(isM2W) correct = normalizeEng(userAnswer) === normalizeEng(q.word);
+    else { const userN = normalizeJa(userAnswer); correct = q.meanings.some(m => normalizeJa(m) === userN); }
+  }catch(e){
+    console.error("answer check failed", e);
+    correct = false;
+  }
+  state.answered = true; state.lastCorrect = correct; state.lastUserAnswer = userAnswer; state.lastSkipped = false;
+  state.results[state.idx] = { word:q.word, meaningStr:q.meaningStr, meanings:q.meanings, direction:q.direction, correct, userAnswer };
+  document.removeEventListener("keydown", onQuizKeydown);
+  render();
+}
+
+function skipAnswer(){
+  const q = currentQ();
+  state.answered = true; state.lastCorrect = false; state.lastUserAnswer = ""; state.lastSkipped = true;
+  state.results[state.idx] = { word:q.word, meaningStr:q.meaningStr, meanings:q.meanings, direction:q.direction, correct:false, userAnswer:"", skipped:true };
+  document.removeEventListener("keydown", onQuizKeydown);
+  render();
+}
+
+// ---------- flashcards ----------
+function startFlashcards(entries){
+  let queue = entries.map(e=>({...e}));
+  if(state.flashShuffle) shuffle(queue);
+  state.flashQueue = queue;
+  state.flashIdx = 0;
+  state.flashFlipped = false;
+  state.flashKnown = 0;
+  state.flashUnsure = [];
+  state.flashDone = false;
+  state.screen = "flashcard";
+  render();
+}
+function flashAdvance(known){
+  const card = state.flashQueue[state.flashIdx];
+  if(known) state.flashKnown += 1;
+  else state.flashUnsure.push(card);
+  if(state.flashIdx + 1 >= state.flashQueue.length){
+    state.flashDone = true;
+  } else {
+    state.flashIdx += 1;
+    state.flashFlipped = false;
+  }
+  render();
+}
+
+async function goNext(){
+  if(state.idx + 1 >= state.queue.length){
+    await finishSession();
+    state.screen = "result";
+    render();
+  } else {
+    state.idx += 1; state.answered = false; state.lastUserAnswer = ""; state.lastSkipped = false;
+    render();
+  }
+}
+
+async function finishSession(){
+  const total = state.results.length;
+  const correctCount = state.results.filter(r=>r.correct).length;
+  const missed = state.results.filter(r=>!r.correct).map(r=>({ word:r.word, meaningStr:r.meaningStr, meanings:r.meanings }));
+  const list = getList(state.selectedListId);
+  const session = {
+    id: `${Date.now()}`, date: new Date().toISOString(), mode: state.mode,
+    listId: state.selectedListId, listName: list ? list.name : "",
+    total, correct: correctCount, missed
+  };
+  let history = [...state.history, session];
+  const forThisList = history.filter(h=>h.listId===session.listId);
+  if(forThisList.length > HISTORY_MAX_PER_LIST){
+    const overflow = forThisList.length - HISTORY_MAX_PER_LIST;
+    const toRemoveIds = new Set(forThisList.slice(0, overflow).map(h=>h.id));
+    history = history.filter(h=> !(h.listId===session.listId && toRemoveIds.has(h.id)));
+  }
+  state.history = history;
+  await saveHistory(history);
+  await bumpAttemptStats(state.selectedListId, state.myStudentId);
+}
+
+// ---------- custom confirm (replaces window.confirm, which sandboxed iframes may silently block) ----------
+let confirmCallback = null;
+function showConfirm(message, onYes){
+  confirmCallback = onYes;
+  document.getElementById("confirmMsg").textContent = message;
+  document.getElementById("confirmOverlay").style.display = "flex";
+}
+function hideConfirm(){
+  document.getElementById("confirmOverlay").style.display = "none";
+  confirmCallback = null;
+}
+document.getElementById("confirmYes").addEventListener("click", ()=>{
+  const cb = confirmCallback;
+  hideConfirm();
+  if(cb) cb();
+});
+document.getElementById("confirmNo").addEventListener("click", hideConfirm);
+
+// ---------- init ----------
+async function initApp(){
+  try{
+    const migrated = await migrateOldDataIfNeeded();
+    state.lists = migrated.lists;
+    state.history = migrated.history;
+    state.pin = await loadPin();
+    state.roster = await loadRoster();
+    state.attemptStats = await loadAttemptStats();
+    state.myStudentId = await loadMyStudentId();
+  }catch(e){ console.error("init failed", e); }
+  state.screen = "student-home";
+  render();
+}
+initApp();
+</script>
+</body>
+</html>
